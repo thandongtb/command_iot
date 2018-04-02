@@ -1,5 +1,6 @@
 from underthesea import word_sent
 from api.views import config
+import paho.mqtt.publish as publish
 
 class CommandRecognition(object):
     def __init__(self, sentence = ''):
@@ -7,6 +8,8 @@ class CommandRecognition(object):
         self.locations = config.LOCATIONS
         self.objects = config.OBJECTS
         self.sentence = sentence
+        self.host = "mqtt.koor.io"
+        self.topic = "5aa1171bda0970019aad7c6a.koor.io/devices/5abfbaec95392e04569ece8c"
 
     def __split_sentence(self, delimiter = ' '):
         return self.sentence.lower().split(delimiter)
@@ -52,19 +55,28 @@ class CommandRecognition(object):
     def detect_iot_commands(self):
         split_commands = self.__join_commands()
         result = []
+        msgs = []
         for command in split_commands:
             temp = {
                 'command': [],
                 'objects': [],
                 'locations': [],
             }
+            temp_cmd = ""
             for word in command:
                 if word in self.commands:
                     temp['command'].append(word)
+                    temp_cmd += str(config.CMDS_MAPPING[word])
                 if word in self.objects:
                     temp['objects'].append(word)
                 if word in self.locations:
                     temp['locations'].append(word)
+                    temp_cmd += str(config.PINMODE_MAPPING[word])
             result.append(temp)
+            msgs.append({
+                'topic' : self.topic,
+                'payload' : temp_cmd
+            })
+        publish.multiple(msgs, hostname=self.host)
         return result
 

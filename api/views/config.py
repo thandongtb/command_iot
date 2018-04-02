@@ -1,13 +1,16 @@
 COMMANDS = [
     "bật",
-    'tắt',
+    'mở',
     'sáng',
     'chạy',
     'dừng',
     'đóng',
     'ngắt',
-    'mở',
+    'tắt',
 ]
+
+CMDS_MAPPING = dict.fromkeys(COMMANDS[:4], 1)
+CMDS_MAPPING.update(dict.fromkeys(COMMANDS[4:], 0))
 
 OBJECTS = [
     'điện',
@@ -63,3 +66,14 @@ LOCATIONS = [
     'cửa ra vào',
     'cửa sổ',
 ]
+
+PINMODE_MAPPING = dict.fromkeys(LOCATIONS, 0)
+
+PINMODE_MAPPING.update({
+    LOCATIONS[4] : 5,
+    LOCATIONS[5] : 4,
+    LOCATIONS[6] : 14,
+    LOCATIONS[7] : 12,
+})
+
+print("" + str(PINMODE_MAPPING['phòng khách']))
